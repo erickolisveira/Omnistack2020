@@ -6,28 +6,11 @@ import './App.css'
 import './Sidebar.css'
 import './Main.css'
 
+import DevForm from './components/DevForm'
+import DevItem from './components/DevItem'
+
 const App = () => {
    const [devs, setDevs] = useState([])
-   const [github_username, setGithubusername] = useState('')
-   const [techs, setTechs] = useState('')
-   const [latitude, setLatitude] = useState('')
-   const [longitude, setLongitude] = useState('')
-
-   useEffect(() => {
-      navigator.geolocation.getCurrentPosition(
-         (position) => {
-            const { latitude, longitude } = position.coords
-
-            setLatitude(latitude)
-            setLongitude(longitude)
-         }, (err) => {
-            console.log(err)
-         },
-         {
-            timeout: 30000,
-         }
-      )
-   }, [])
 
    useEffect(() => {
       async function loadDevs() {
@@ -38,90 +21,27 @@ const App = () => {
       loadDevs()
    }, [])
 
-   async function handleSubmitDev(e) {
-      e.preventDefault()
-
-      const response = await api.post('./devs', {
-         github_username,
-         techs,
-         latitude,
-         longitude
-      })
-
-      setGithubusername('')
-      setTechs('')
+   async function handleSubmitDev(data) {
+      const response = await api.post('./devs', data)
 
       setDevs([...devs, response.data])
+   }
+
+   async function handleDelete(_id) {
+      await api.delete(`./devs/${_id}`)
+      setDevs(devs.filter(dev => dev._id !== _id ))
    }
 
    return (
       <div id="app">
          <aside>
             <strong>Cadastrar</strong>
-            <form onSubmit={handleSubmitDev}>
-               <div className="input-block">
-                  <label htmlFor="github_username">Usuário do Github</label>
-                  <input 
-                  name="github_username" 
-                  id="github_username" 
-                  required 
-                  value={github_username}
-                  onChange={e => setGithubusername(e.target.value)}
-               />
-               </div>
-
-               <div className="input-block">
-                  <label htmlFor="">Tecnologias</label>
-                  <input 
-                  name="techs" 
-                  id="techs" 
-                  required 
-                  value={techs}
-                  onChange={e => setTechs(e.target.value)}
-               />
-               </div>
-
-               <div className="input-group">
-                  <div className="input-block">
-                     <label htmlFor="latitude">Latitude</label>
-                     <input
-                        type="number"
-                        name="latitude"
-                        id="latitude"
-                        required
-                        value={latitude} 
-                        onChange={e => setLatitude(e.target.value)}
-                     />
-                  </div>
-                  <div className="input-block">
-                     <label htmlFor="longitude">Longitude</label>
-                     <input
-                        type="number"
-                        name="longitude"
-                        id="longitude"
-                        required
-                        value={longitude} 
-                        onChange={e => setLongitude(e.target.value)}
-                     />
-                  </div>
-               </div>
-               <button type="submit">Salvar</button>
-            </form>
+            <DevForm onSubmit={handleSubmitDev}/>
          </aside>
          <main>
             <ul>
                {devs.map(dev => (
-                  <li key={dev._id} className="dev-item">
-                  <header>
-                     <img src={dev.avatar_url} alt={dev.name} />
-                     <div className="user-info">
-                        <strong>{dev.name}</strong>
-                        <span>{dev.techs.join(', ')}</span>
-                     </div>
-                  </header>
-                  <p>{dev.bio}</p>
-                  <a href={`https://github.com/${dev.github_username}`}>Acessar perfil no GitHub</a>
-               </li>
+                  <DevItem key={dev._id}  dev={dev} handleDelete={handleDelete}/>
                ))}
             </ul>
          </main>
