@@ -10,6 +10,11 @@ module.exports = {
       return res.json(devs)
    },
 
+   async show(req, res){
+      const dev = await Dev.findById(req.params.id)
+      return res.json(dev)
+   },
+
    async store(req, res) {
       const { github_username, techs, latitude, longitude } = req.body
    
@@ -37,5 +42,21 @@ module.exports = {
          })
       }
       return res.json(dev)
+   },
+
+   async update(req, res) {
+      const body = req.body
+      const dev = {
+         name: body.name,
+         bio: body.bio,
+         techs: parseStringAsArray(body.techs)
+      }
+      const updatedDev = await Dev.findByIdAndUpdate(req.params.id, dev, { new: true })
+      return res.json(updatedDev)
+   },
+
+   async destroy(req, res) {
+      await Dev.findByIdAndDelete(req.params.id)
+      return res.status(204).end()
    }
 }
