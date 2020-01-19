@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import './styles.css'
+import EditItem from '../EditItem'
 
-export default function DevItem({ dev, handleDelete }) {
+function Dev({ dev, toggleEditing, handleDelete }) {
    return (
       <li className="dev-item">
          <div className="header-div">
@@ -17,9 +18,35 @@ export default function DevItem({ dev, handleDelete }) {
                <strong>X</strong>
             </button>
          </div>
-
          <p>{dev.bio}</p>
-         <a href={`https://github.com/${dev.github_username}`}>Acessar perfil no GitHub</a>
+         <div className="footer-div">
+            <a href={`https://github.com/${dev.github_username}`}>Acessar perfil no GitHub</a>
+            <button className="edit-button" onClick={() => toggleEditing()}>Editar</button>
+         </div>
       </li>
    )
+}
+
+export default function DevItem({ dev, handleDelete }) {
+   const [isEditing, SetIsEditing] = useState(false)
+
+   function toggleEditing() {
+      SetIsEditing(!isEditing)
+   }
+
+   if(!isEditing)
+      return( 
+         <Dev 
+            dev={dev} 
+            handleDelete={handleDelete}
+            toggleEditing={toggleEditing}
+         /> 
+      )
+   else
+      return( 
+         <EditItem 
+            dev={dev}
+            toggleEditing={toggleEditing}
+         />
+      )
 }

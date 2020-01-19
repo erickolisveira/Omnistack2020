@@ -52,7 +52,7 @@ li.dev-item a:hover {
    color: red;
    cursor: pointer;
    margin-top: -50px;
-   font-size: 15px;
+   font-size: 17px;
 }
 
 .user-info strong {
@@ -65,4 +65,20 @@ li.dev-item a:hover {
    font-size: 13px;
    color: #999;
    margin-top: 2px;
+}
+
+.footer-div {
+   display: flex;
+   justify-content: space-between;
+}
+
+.footer-div .edit-button {
+   border: none;
+   background-color: transparent;
+   cursor: pointer;
+   color: #8e4dff;
+}
+
+.footer-div .edit-button:hover {
+   color: #5a2ea6;
 }
